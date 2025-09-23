@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Practical 2 - Billing Calculator</title>
+  <script>
+    /*
+    🎯 Aim:
+    To implement variable declarations using var, let, and const,
+    and demonstrate ES6 features such as template literals,
+    destructuring, and default parameters by creating a billing calculator
+    with formatted output.
+    */
+
+    // -----------------------------
+    // Variable Declarations
+    // -----------------------------
+    var itemName = "Notebook";   // using var
+    let pricePerItem = 50;       // using let
+    const taxRate = 0.18;        // using const (constant value)
+
+    // -----------------------------
+    // Billing Function with ES6 Features
+    // -----------------------------
+    const calculateBill = (quantity = 1, discount = 0) => {
+      // Object created for destructuring
+      const billingDetails = {
+        item: itemName,
+        price: pricePerItem,
+        qty: quantity,
+        discountPercent: discount
+      };
+
+      // Object Destructuring
+      const { item, price, qty, discountPercent } = billingDetails;
+
+      // Billing Calculations
+      const subtotal = price * qty;
+      const discountAmount = subtotal * (discountPercent / 100);
+      const taxableAmount = subtotal - discountAmount;
+      const tax = taxableAmount * taxRate;
+      const total = taxableAmount + tax;
+
+      // Output using Template Literals
+      console.log(`\n🧾 Bill for: ${item}`);
+      console.log(`Quantity: ${qty}`);
+      console.log(`Price per item: ₹${price}`);
+      console.log(`Discount: ${discountPercent}%`);
+      console.log(`Subtotal: ₹${subtotal}`);
+      console.log(`Discount Amount: ₹${discountAmount.toFixed(2)}`);
+      console.log(`Tax @ ${taxRate * 100}%: ₹${tax.toFixed(2)}`);
+      console.log(`Total Payable: ₹${total.toFixed(2)}`);
+    };
+
+    // -----------------------------
+    // Function Calls
+    // -----------------------------
+    calculateBill(4, 10); // Example 1: 4 items, 10% discount
+    calculateBill();      // Example 2: Default values (1 item, 0% discount)
+  </script>
+</head>
+<body>
+  <h2>Practical 2: Billing Calculator using ES6 Features</h2>
+  <p>👉 Open the browser console to view the bill (Right click > Inspect > Console)</p>
+</body>
+</html>
