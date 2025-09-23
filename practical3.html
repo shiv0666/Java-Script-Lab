@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Club Performance Tracker</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #e8f0ff;
+        padding: 20px;
+    }
+    h1, h2, h3 {
+        text-align: center;
+    }
+    .aim {
+        background: #fff;
+        padding: 10px;
+        margin: 10px auto;
+        border-radius: 10px;
+        width: fit-content;
+        box-shadow: 0 0 8px rgba(0,0,0,0.2);
+    }
+    .container {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    .team-box {
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        width: 30%;
+        min-width: 250px;
+        box-shadow: 0 0 8px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease;
+    }
+    .team-box:hover {
+        transform: scale(1.03);
+    }
+    label {
+        font-weight: bold;
+    }
+    input, select {
+        width: 100%;
+        margin-bottom: 8px;
+        padding: 5px;
+    }
+    .highlight {
+        animation: pulse 1.5s infinite;
+        border: 2px solid gold;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 10px gold; }
+        50% { box-shadow: 0 0 20px orange; }
+        100% { box-shadow: 0 0 10px gold; }
+    }
+    .footer {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 14px;
+        color: #555;
+    }
+    button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 25px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<h1>Campus Club Performance Tracker</h1>
+
+<div class="aim">
+    <h3>Aim: To record and display scores of 3 campus club teams, calculate weighted total, grade, remark, add bonus points, and highlight the top team dynamically.</h3>
+</div>
+
+<div class="container" id="teamContainer"></div>
+
+<button onclick="processScores()">Submit Scores</button>
+
+<div class="footer" id="footer"></div>
+
+<script>
+const weights = { r1: 0.4, r2: 0.35, r3: 0.25 };
+let categories = ["Innovation", "Teamwork", "Presentation"].sort(() => Math.random() - 0.5);
+
+let teamData = [
+    { name: "Tech Titans", prn: 230101, r1: 0, r2: 0, cat: categories[0], total: 0 },
+    { name: "Code Crusaders", prn: 230102, r1: 0, r2: 0, cat: categories[1], total: 0 },
+    { name: "Pixel Pioneers", prn: 230103, r1: 0, r2: 0, cat: categories[2], total: 0 }
+];
+
+// Generate team cards side by side
+const container = document.getElementById("teamContainer");
+teamData.forEach((t, i) => {
+    container.innerHTML += `
+        <div class="team-box" id="team-${i}">
+            <label>Team Name:</label>
+            <input type="text" value="${t.name}" disabled><br>
+            <label>Team ID:</label>
+            <input type="number" value="${t.prn}" disabled><br>
+            <label>Round 1 Score:</label>
+            <input type="range" min="0" max="100" value="0" oninput="update(${i}, 'r1', this.value)">
+            <label>Round 2 Score:</label>
+            <input type="number" min="0" max="100" value="0" oninput="update(${i}, 'r2', this.value)">
+            <label>Round 3 Category:</label>
+            <select onchange="update(${i}, 'cat', this.value)">
+                ${categories.map(c => `<option value="${c}">${c}</option>`).join("")}
+            </select>
+            <p><b>Total:</b> <span id="total-${i}">0</span></p>
+            <p><b>Grade:</b> <span id="grade-${i}">-</span></p>
+            <p><b>Remark:</b> <span id="remark-${i}">-</span></p>
+        </div>
+    `;
+});
+
+// Update function on input change
+function update(index, field, value) {
+    if (field === "r1" || field === "r2") {
+        if (value < 0 || value > 100) return alert("Score must be 0–100");
+        teamData[index][field] = parseInt(value);
+    } else {
+        teamData[index][field] = value;
+    }
+    calculate(index);
+    highlightWinner();
+}
+
+// Calculate weighted total, grade, remark and bonus
+function calculate(index) {
+    const team = teamData[index];
+    let r3Score = team.cat === "Innovation" ? 90 : team.cat === "Teamwork" ? 80 : 70;
+    let total = (team.r1 * weights.r1) + (team.r2 * weights.r2) + (r3Score * weights.r3);
+
+    // Bonus points
+    if (team.r2 > 80) total += 5;
+    if (team.cat === "Innovation") total += 3;
+
+    // Grade assignment
+    let grade = total >= 90 ? "A" : total >= 75 ? "B" : total >= 60 ? "C" : "F";
+
+    // Remark assignment
+    let remark;
+    switch (grade) {
+        case "A": remark = "Outstanding"; break;
+        case "B": remark = "Strong"; break;
+        case "C": remark = "Average"; break;
+        default: remark = "Needs Improvement";
+    }
+
+    team.total = total;
+
+    document.getElementById(`total-${index}`).innerText = total.toFixed(2);
+    document.getElementById(`grade-${index}`).innerText = grade;
+    document.getElementById(`remark-${index}`).innerText = remark;
+}
+
+// Highlight the top team card
+function highlightWinner() {
+    document.querySelectorAll(".team-box").forEach(box => box.classList.remove("highlight"));
+    let maxScore = Math.max(...teamData.map(t => t.total));
+    let topTeams = teamData.filter(t => t.total === maxScore);
+
+    // Tie-breaker based on team name first letter
+    if (topTeams.length > 1) {
+        topTeams.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    let winnerIndex = teamData.indexOf(topTeams[0]);
+    document.getElementById(`team-${winnerIndex}`).classList.add("highlight");
+}
+
+// Footer with name, date/time, fun fact
+document.getElementById("footer").innerHTML = `
+    <p>Developed by: <b>Shivansh Lohani</b></p>
+    <p>${new Date().toLocaleString()}</p>
+    <p>Fun Fact: My teammate Rahul can code all night without coffee!</p>
+`;
+
+// Process scores when button is clicked (ensure first calculation)
+function processScores() {
+    teamData.forEach((t, i) => calculate(i));
+    highlightWinner();
+}
+</script>
+
+</body>
+</html>
