@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practical 1 - JavaScript Setup</title>
+</head>
+<body>
+  <!-- 
+    Aim:
+    To demonstrate the use of Inline, Internal JavaScript in a webpage,
+    and to explore console methods such as console.log(), console.error(),
+    console.table(), and console.trace() using Developer Tools.
+  -->
+
+  <h1>Practical 1 - JavaScript Setup</h1>
+
+  <!-- 1. Inline JavaScript -->
+  <h2>Inline JavaScript</h2>
+  <button onclick="alert('Hello from Inline JavaScript!')">Click Inline JS</button>
+
+  <!-- 2. Internal JavaScript -->
+  <h2>Internal JavaScript</h2>
+  <button onclick="sayHello()">Click Internal JS</button>
+
+  <script>
+    function sayHello() {
+      alert("Hello from Internal JavaScript!");
+      
+      // Console examples
+      console.log("This is console.log()");
+      console.error("This is console.error()");
+      console.table({ Name: "Shivansh", Course: "B.Tech", Year: 3 });
+      console.trace("This is console.trace()");
+    }
+  </script>
+</body>
+</html>
+
