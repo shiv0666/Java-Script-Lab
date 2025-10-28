@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Practical 6 Final Task</title>
+</head>
+<body>
+  <h3>Smart Resume Data Extractor (Check Console)</h3>
+  <script>
+    // Functions
+    function formatName(raw) {
+      return raw.trim().split(/\s+/)
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(" ");
+    }
+
+    function extractEmails(text) {
+      return text.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g) || [];
+    }
+
+    function validateMobile(num) {
+      return /^[6-9]\d{9}$/.test(num.trim()) ? num.trim() : "Invalid phone number";
+    }
+
+    function processSkills(raw) {
+      return raw.split(",").map(s => s.trim()).filter(s => s.length > 0);
+    }
+
+    function extractHashtags(text) {
+      return text.match(/#[A-Za-z0-9_]+/g) || [];
+    }
+
+    function countWords(text) {
+      return text.trim().split(/\s+/).filter(Boolean).length;
+    }
+
+    function countVowels(text) {
+      let v = "aeiouAEIOU", c = 0;
+      for (let ch of text) if (v.includes(ch)) c++;
+      return c;
+    }
+
+    // Main Program 
+    function processResume(resume) {
+      let out = {};
+
+      // Name
+      let nameLine = resume.match(/Name:\s*(.+)/i);
+      if (nameLine) out.name = formatName(nameLine[1]);
+
+      // Emails
+      let emails = extractEmails(resume);
+      out.email = emails.length > 0 ? emails[0].toLowerCase() : "";
+      out.emailCount = emails.length;
+
+      // Phone
+      let phoneLine = resume.match(/Phone:\s*([0-9]+)/i);
+      if (phoneLine) out.phone = validateMobile(phoneLine[1]);
+
+      // Skills
+      let skillsLine = resume.match(/Skills:\s*(.+)/i);
+      if (skillsLine) out.skills = processSkills(skillsLine[1]);
+
+      // Hashtags
+      out.hashtags = extractHashtags(resume);
+
+      // Word & Vowel Count
+      out.wordCount = countWords(resume);
+      out.vowelCount = countVowels(resume);
+
+      return out;
+    }
+
+    //  Test Inputs 
+    let resume1 = `
+       Name:   jOhN    doE    
+       Email:   john.doe@Example.com     
+       Phone:  9876543210   
+       Skills:   HTML, CSS,   JavaScript,  Python,   SQL     
+       Extra: Contact me at john.altmail@example.org  
+       #developer #coder 
+    `;
+
+    let resume2 = `
+       Name:   aLIcE   SMiTH     
+       Email:   alice.smith@work.com     
+       Phone:  1234567890     
+       Skills:   C,   C++ ,Java,   JavaScript   
+       Extra Info:  Reach me also at  alice.backup@mail.org 
+       #programmer   #techie 
+    `;
+
+    let resume3 = `
+       Name:   ROBERT   broWn   
+       Email: robert_brown@example.com  
+       Phone:   8765432109   
+       Skills:   PHP,MySQL,  HTML ,CSS, JavaScript    
+       Other: robert.personal@domain.org robert.dev@github.com 
+       #fullstack #developer #javascript #100DaysOfCode 
+    `;
+
+    let resume4 = `
+       Random Text: Ignore this line   
+       Name:    keVin   o'CONNOR  
+       Email:   kevin.oConnor@Mail.com    
+       Phone:  7894561230   
+       Skills:   Python,   Machine Learning,   Data Science , AI    
+       Extra Notes: You can also contact: kevin.backup123@mail.org   
+       #AI #MachineLearning #DataScience #coder  
+    `;
+
+    // -------- Run Program --------
+    console.log("Test 1:", processResume(resume1));
+    console.log("Test 2:", processResume(resume2));
+    console.log("Test 3:", processResume(resume3));
+    console.log("Test 4:", processResume(resume4));
+  </script>
+</body>
+</html>
