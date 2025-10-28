@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Minimal To-Do List</title>
+</head>
+<body>
+  <h1>To-Do List</h1>
+
+  <div>
+    <input id="taskInput" type="text" placeholder="Enter task">
+    <button onclick="addTask()">Add</button>
+    <button onclick="sortTasks('asc')">Sort A–Z</button>
+    <button onclick="sortTasks('desc')">Sort Z–A</button>
+  </div>
+
+  <p id="count"></p>
+  <ul id="taskList"></ul>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+    render();
+
+    // Add task
+    function addTask() {
+      let input = document.getElementById("taskInput");
+      let text = input.value.trim();
+      if (!text) return alert("Task cannot be empty!");
+      if (tasks.some(t => t.text.toLowerCase() === text.toLowerCase()))
+        return alert("Task already exists!");
+      tasks.push({ text, completed:false });
+      input.value = "";
+      save();
+    }
+
+    // Render tasks
+    function render() {
+      let list = document.getElementById("taskList");
+      list.innerHTML = "";
+      tasks.forEach((task, i) => {
+        let li = document.createElement("li");
+        if (task.completed) li.style.textDecoration = "line-through";
+
+        // toggle complete
+        li.onclick = () => { task.completed = !task.completed; save(); };
+
+        // text span
+        let span = document.createElement("span");
+        span.textContent = task.text;
+        span.style.flex = "1";
+        li.appendChild(span);
+
+        // edit button
+        let editBtn = document.createElement("button");
+        editBtn.textContent = "Edit";
+        editBtn.onclick = e => { e.stopPropagation(); editTask(i); };
+        li.appendChild(editBtn);
+
+        // delete button
+        let delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.onclick = e => {
+          e.stopPropagation();
+          if (confirm("Delete this task?")) { tasks.splice(i,1); save(); }
+        };
+        li.appendChild(delBtn);
+
+        list.appendChild(li);
+      });
+      document.getElementById("count").textContent = "Total tasks: " + tasks.length;
+    }
+
+    // Edit task inline
+    function editTask(i) {
+      let newText = prompt("Edit task:", tasks[i].text);
+      if (newText) {
+        newText = newText.trim();
+        if (!newText) return alert("Task cannot be empty!");
+        if (tasks.some((t,idx)=>idx!==i && t.text.toLowerCase()===newText.toLowerCase()))
+          return alert("Duplicate task!");
+        tasks[i].text = newText;
+        save();
+      }
+    }
+
+    // Sort tasks
+    function sortTasks(order) {
+      tasks.sort((a,b)=> a.text.localeCompare(b.text));
+      if(order==="desc") tasks.reverse();
+      save();
+    }
+
+    // Save to localStorage
+    function save() {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      render();
+    }
+
+    // Enter key shortcut
+    document.getElementById("taskInput").addEventListener("keydown", e=>{
+      if(e.key==="Enter") addTask();
+    });
+  </script>
+</body>
+</html>
