@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gym Admission Form</title>
+  <style>
+    body {font-family: Arial; background: #f2f4f8;}
+    form {
+      width: 420px; margin: 30px auto; background: #fff;
+      padding: 20px; border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    h2 {text-align: center;}
+    label {display:block; margin-top:10px;}
+    input, select {width:100%; padding:7px; margin-top:3px;}
+    .msg {font-size:13px; color:red;}
+    .valid {border:2px solid #28a745;}
+    .invalid {border:2px solid #dc3545;}
+    #preview {margin-top:15px; background:#e9f7ef; padding:10px; border-radius:6px; display:none;}
+    #submitBtn[disabled] {background:#9fb8e3; cursor:not-allowed;}
+    #submitBtn {background:#007bff; color:white; border:none; padding:10px; margin-top:10px; border-radius:5px; cursor:pointer;}
+    #resetBtn {background:#6c757d; color:white; border:none; padding:10px; border-radius:5px; cursor:pointer;}
+  </style>
+</head>
+<body>
+
+<form name="gymForm" id="gymForm" onsubmit="return handleSubmit(event)" onreset="clearForm()">
+  <h2>FitZone Gym Admission</h2>
+  <p>Total Form Elements: <span id="count"></span></p>
+
+  <label>Full Name:</label>
+  <input type="text" id="name" onblur="checkName()" oninput="checkName()" required>
+  <div id="nameMsg" class="msg"></div>
+
+  <label>Email:</label>
+  <input type="email" id="email" oninput="checkEmail()" required>
+  <div id="emailMsg" class="msg"></div>
+
+  <label>Age:</label>
+  <input type="number" id="age" onchange="checkAge()" required>
+  <div id="ageMsg" class="msg"></div>
+
+  <label>Gender:</label>
+  <input type="radio" name="gender" value="Male" onchange="checkGender()"> Male
+  <input type="radio" name="gender" value="Female" onchange="checkGender()"> Female
+  <div id="genderMsg" class="msg"></div>
+
+  <label>Membership Type:</label>
+  <select id="membership" onchange="checkMembership()">
+    <option value="">Select</option>
+    <option>Monthly</option>
+    <option>Quarterly</option>
+    <option>Yearly</option>
+  </select>
+  <div id="membershipMsg" class="msg"></div>
+
+  <label>Password:</label>
+  <input type="password" id="password" oninput="checkPassword()" required>
+  <div id="passwordMsg" class="msg"></div>
+
+  <label>Confirm Password:</label>
+  <input type="password" id="confirm" oninput="checkConfirm()" required>
+  <div id="confirmMsg" class="msg"></div>
+
+  <label>Phone:</label>
+  <input type="text" id="phone" oninput="checkPhone()" required>
+  <div id="phoneMsg" class="msg"></div>
+
+  <label>Date of Birth:</label>
+  <input type="date" id="dob" onchange="checkDOB()" required>
+  <div id="dobMsg" class="msg"></div>
+
+  <label>Profile Photo:</label>
+  <input type="file" id="photo" onchange="checkPhoto()" required>
+  <div id="photoMsg" class="msg"></div>
+
+  <label><input type="checkbox" id="terms" onchange="checkTerms()"> I agree to Terms & Conditions</label>
+  <div id="termsMsg" class="msg"></div>
+
+  <br>
+  <button type="submit" id="submitBtn" disabled>Submit</button>
+  <button type="reset" id="resetBtn">Reset</button>
+
+  <div id="preview"></div>
+</form>
+
+<script>
+let form = document.forms["gymForm"];
+let form2 = document.getElementById("gymForm");
+document.getElementById("count").innerText = form.length;
+
+function mark(el, msgEl, valid, text) {
+  if(valid){ el.className="valid"; msgEl.style.color="green"; msgEl.innerText=text||"✓ Valid"; }
+  else{ el.className="invalid"; msgEl.style.color="red"; msgEl.innerText=text; }
+  checkAll();
+}
+
+function checkName(){
+  let v=form["name"].value.trim();
+  if(v===""||v.length<3){mark(name,nameMsg,false,"Enter min 3 letters");return false;}
+  if(!/^[A-Za-z\s]+$/.test(v)){mark(name,nameMsg,false,"Only alphabets allowed");return false;}
+  mark(name,nameMsg,true);return true;
+}
+function checkEmail(){
+  let v=form["email"].value;
+  let p=/^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+  if(!p.test(v)){mark(email,emailMsg,false,"Invalid email");return false;}
+  mark(email,emailMsg,true);return true;
+}
+function checkAge(){
+  let a=form["age"].value;
+  if(a<18||a>60){mark(age,ageMsg,false,"Age 18–60 only");return false;}
+  mark(age,ageMsg,true);return true;
+}
+function checkGender(){
+  let g=document.querySelector('input[name="gender"]:checked');
+  genderMsg.innerText=g?"":"Select gender"; checkAll(); return !!g;
+}
+function checkMembership(){
+  let m=form["membership"].value;
+  if(m===""){mark(membership,membershipMsg,false,"Select membership");return false;}
+  mark(membership,membershipMsg,true);return true;
+}
+function checkPassword(){
+  let p=form["password"].value;
+  let reg=/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&+=]).{8,}$/;
+  if(!reg.test(p)){mark(password,passwordMsg,false,"Weak password");return false;}
+  mark(password,passwordMsg,true);checkConfirm();return true;
+}
+function checkConfirm(){
+  let p=form["password"].value, c=form["confirm"].value;
+  if(c!==p||c===""){mark(confirm,confirmMsg,false,"Passwords don’t match");return false;}
+  mark(confirm,confirmMsg,true);return true;
+}
+function checkPhone(){
+  let ph=form["phone"].value;
+  if(!/^\d{10}$/.test(ph)){mark(phone,phoneMsg,false,"Enter 10 digits");return false;}
+  mark(phone,phoneMsg,true);return true;
+}
+function checkDOB(){
+  let d=new Date(form["dob"].value), t=new Date();
+  if(d>t){mark(dob,dobMsg,false,"Future date invalid");return false;}
+  mark(dob,dobMsg,true);return true;
+}
+function checkPhoto(){
+  let f=form["photo"].files[0];
+  if(!f){photoMsg.innerText="Upload file";return false;}
+  if(!f.name.match(/\.(jpg|png)$/i)){photoMsg.innerText="Only JPG/PNG";return false;}
+  if(f.size>1*1024*1024){photoMsg.innerText="File ≤ 1MB";return false;}
+  photoMsg.style.color="green";photoMsg.innerText="✓ File valid";checkAll();return true;
+}
+function checkTerms(){
+  if(!terms.checked){termsMsg.innerText="Please accept terms";return false;}
+  termsMsg.innerText="✓ Accepted";termsMsg.style.color="green";checkAll();return true;
+}
+function checkAll(){
+  let ok=checkName()&&checkEmail()&&checkAge()&&checkGender()&&checkMembership()&&
+          checkPassword()&&checkConfirm()&&checkPhone()&&checkDOB()&&checkPhoto()&&checkTerms();
+  document.getElementById("submitBtn").disabled=!ok;
+  return ok;
+}
+function handleSubmit(e){
+  e.preventDefault();
+  if(checkAll()){
+    document.getElementById("preview").style.display="block";
+    document.getElementById("preview").innerHTML=
+      `<b>Form submitted successfully!</b><br>Welcome to FitZone Gym.<br><br>
+       <b>Name:</b> ${form["name"].value}<br>
+       <b>Email:</b> ${form["email"].value}<br>
+       <b>Membership:</b> ${form["membership"].value}`;
+  }else form.reportValidity();
+}
+function clearForm(){
+  let spans=document.querySelectorAll(".msg");
+  spans.forEach(s=>s.innerText="");
+  let inputs=form.querySelectorAll("input,select");
+  inputs.forEach(i=>i.className="");
+  document.getElementById("preview").style.display="none";
+  document.getElementById("submitBtn").disabled=true;
+}
+form.addEventListener("invalid",e=>{
+  e.preventDefault();
+  e.target.setCustomValidity("Please check this field");
+  e.target.reportValidity();
+});
+</script>
+
+</body>
+</html>
