@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Practical 5 – Final Task</title>
+</head>
+<body>
+  <h1>Cart Total Calculator</h1>
+  <pre id="output"></pre>
+
+  <script>
+    // Part A – Setup the Cart
+    let cart = [
+      { id: 1, name: "Pen", price: 20, qty: 2, category: "stationery" },
+      { id: 2, name: "Mug", price: 150, qty: 1, category: "kitchen" },
+      { id: 3, name: "Notebook", price: 80, qty: 3, category: "stationery" }
+    ];
+
+    let result = "";
+
+    // Part B – Subtotal per item using map
+    let itemTotals = cart.map(function(item){
+      return item.price * item.qty;
+    });
+
+    // Part C – Item-level discount (5% if qty ≥ 3)
+    let discountedItemTotals = cart.map(function(item){
+      let subtotal = item.price * item.qty;
+      if(item.qty >= 3){
+        subtotal = subtotal - (subtotal * 0.05);
+      }
+      return subtotal;
+    });
+
+    // ForEach – Print receipt lines
+    cart.forEach(function(item){
+      let subtotal = item.price * item.qty;
+      if(item.qty >= 3){
+        result += "Item: " + item.name + " (x" + item.qty + ") = " + subtotal + " → discount applied\n";
+      } else {
+        result += "Item: " + item.name + " (x" + item.qty + ") = " + subtotal + "\n";
+      }
+    });
+    result += "---------------------------------\n";
+
+    // Part D – Category-level discount (stationery > 200 → 10%)
+    let stationeryItems = cart.filter(function(item){
+      return item.category === "stationery";
+    });
+
+    let stationeryTotal = stationeryItems.reduce(function(sum, item){
+      return sum + (item.price * item.qty);
+    }, 0);
+
+    let stationeryDiscount = 0;
+    if(stationeryTotal > 200){
+      stationeryDiscount = stationeryTotal * 0.10;
+    }
+
+    // Part E – Final Total
+    let subtotal = cart.reduce(function(sum, item){
+      return sum + (item.price * item.qty);
+    }, 0);
+
+    let itemDiscounts = subtotal - discountedItemTotals.reduce(function(sum, val){ return sum + val; }, 0);
+
+    let finalTotal = subtotal - itemDiscounts - stationeryDiscount;
+
+    result += "Subtotal: " + subtotal + "\n";
+    result += "Item Discounts: " + itemDiscounts.toFixed(2) + "\n";
+    result += "Stationery Discount: " + stationeryDiscount.toFixed(2) + "\n";
+    result += "Final Total: " + finalTotal.toFixed(2) + "\n";
+
+    document.getElementById("output").textContent = result;
+  </script>
+</body>
+</html>
