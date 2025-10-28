@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Practical 4 Final Task B2</title>
+</head>
+<body>
+  <h1>Shivansh Digital Locker System</h1>
+  <h3>Options:</h3>
+  <pre>
+1. Compare two PINs
+2. Factorial hash
+3. Check message for "JavaScript"
+4. Secure message (closure)
+5. Reverse number & check palindrome
+6. Word palindrome check
+7. Square root with error handling
+8. Prime number check
+  </pre>
+  <button onclick="startLocker()">Start Program</button>
+
+  <script>
+    // function declaration
+    function getGreater(a, b) {
+      return (a > b) ? a : b;
+    }
+
+    // function expression
+    const factorial = function(n) {
+      if (n < 0) return "Invalid";
+      return (n <= 1) ? 1 : n * factorial(n - 1);
+    };
+
+    // arrow function
+    const checkScript = (str) => str.includes("JavaScript");
+
+    // closure
+    function secureMessage(password) {
+      let msg = "Your secret note!";
+      return function(pass) {
+        return pass === password ? msg : "Access Denied";
+      };
+    }
+
+    // scope demo
+    let lockerName = "DigitalLocker"; 
+    function scopeCheck() {
+      let pin = 1234; 
+      {
+        let tempAccess = "Temp"; 
+        console.log(tempAccess);
+      }
+      console.log(pin);
+    }
+    console.log(lockerName);
+    scopeCheck();
+
+    // reverse number
+    function reverseNumber(num) {
+      if (typeof num !== "number" || isNaN(num)) throw new Error("Invalid");
+      let neg = num < 0;
+      let rev = Math.abs(num).toString().split("").reverse().join("");
+      return neg ? -parseInt(rev) : parseInt(rev);
+    }
+
+    function isPalindrome(num) {
+      return num === reverseNumber(num);
+    }
+
+    // word palindrome
+    function isWordPalindrome(str) {
+      if (!str) throw new Error("Invalid");
+      let clean = str.toLowerCase().replace(/[^a-z0-9]/g, "");
+      return clean === clean.split("").reverse().join("");
+    }
+
+    // sqrt
+    function safeSqrt(n) {
+      if (typeof n !== "number" || isNaN(n)) throw new Error("Invalid");
+      if (n < 0) throw new Error("Negative not allowed");
+      return Math.sqrt(n);
+    }
+
+    // prime check
+    const isPrime = (n) => {
+      if (typeof n !== "number" || isNaN(n) || n < 2) throw new Error("Invalid");
+      for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false;
+      return true;
+    };
+
+    // menu
+    function startLocker() {
+      let ch = prompt("Choose option (1-8):");
+      try {
+        switch(ch) {
+          case "1":
+            let a = +prompt("Enter first PIN:");
+            let b = +prompt("Enter second PIN:");
+            alert("Stronger PIN: " + getGreater(a,b));
+            break;
+          case "2":
+            let n = +prompt("Enter number:");
+            alert("Factorial: " + factorial(n));
+            break;
+          case "3":
+            let note = prompt("Enter message:");
+            alert(checkScript(note) ? "Accepted" : "Rejected");
+            break;
+          case "4":
+            let pass = prompt("Set password:");
+            const locker = secureMessage(pass);
+            let p2 = prompt("Enter password:");
+            alert(locker(p2));
+            break;
+          case "5":
+            let num = +prompt("Enter number:");
+            let rev = reverseNumber(num);
+            alert("Reversed: " + rev + "\nPalindrome? " + isPalindrome(num));
+            break;
+          case "6":
+            let w = prompt("Enter word:");
+            alert(isWordPalindrome(w) ? "Palindrome" : "Not Palindrome");
+            break;
+          case "7":
+            let sq = +prompt("Enter number:");
+            alert("Square Root: " + safeSqrt(sq));
+            break;
+          case "8":
+            let pn = +prompt("Enter number:");
+            alert(isPrime(pn) ? "Prime" : "Not Prime");
+            break;
+          default: alert("Invalid choice");
+        }
+      } catch(err) {
+        alert("Error: " + err.message);
+      }
+    }
+  </script>
+</body>
+</html>
+
+
