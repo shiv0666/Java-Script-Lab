@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Scoreboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+    h2 {
+      text-align: center;
+    }
+    input, button {
+      margin: 5px;
+      padding: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: center;
+    }
+    .delete-btn {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: darkred;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Student Scoreboard</h2>
+
+  <input type="text" id="studentName" placeholder="Enter Student Name">
+  <input type="number" id="studentScore" placeholder="Enter Score">
+  <button id="addBtn">Add Student</button>
+
+  <table id="scoreTable">
+    <tr>
+      <th>Name</th>
+      <th>Score</th>
+      <th>Action</th>
+    </tr>
+  </table>
+
+  <script>
+    let addBtn = document.getElementById("addBtn");
+    let table = document.getElementById("scoreTable");
+
+    addBtn.addEventListener("click", function () {
+      let name = document.getElementById("studentName").value;
+      let score = document.getElementById("studentScore").value;
+
+      if (name === "" || score === "") {
+        alert("Please enter both name and score");
+        return;
+      }
+
+      // create new row
+      let row = document.createElement("tr");
+
+      // name cell
+      let nameCell = document.createElement("td");
+      nameCell.innerText = name;
+
+      // score cell with inline edit
+      let scoreCell = document.createElement("td");
+      scoreCell.innerText = score;
+      scoreCell.style.cursor = "pointer";
+      scoreCell.title = "Click to Edit Score";
+
+      scoreCell.addEventListener("click", function () {
+        let newScore = prompt("Enter new score:", scoreCell.innerText);
+        if (newScore !== null && newScore !== "") {
+          scoreCell.innerText = newScore;
+        }
+      });
+
+      // delete button
+      let actionCell = document.createElement("td");
+      let delBtn = document.createElement("button");
+      delBtn.innerText = "Delete";
+      delBtn.className = "delete-btn";
+
+      delBtn.addEventListener("click", function () {
+        table.removeChild(row);
+      });
+
+      actionCell.appendChild(delBtn);
+
+      // append all cells to row
+      row.appendChild(nameCell);
+      row.appendChild(scoreCell);
+      row.appendChild(actionCell);
+
+      // append row to table
+      table.appendChild(row);
+
+      // clear inputs
+      document.getElementById("studentName").value = "";
+      document.getElementById("studentScore").value = "";
+    });
+  </script>
+
+</body>
+</html>
