@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Web Storage and State Management</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+      transition: all 0.5s;
+    }
+    .dark {
+      background-color: #121212;
+      color: white;
+    }
+    .light {
+      background-color: #ffffff;
+      color: black;
+    }
+    input, textarea, select, button {
+      margin: 8px;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid gray;
+    }
+    h2 {
+      margin-top: 30px;
+      color: #0077cc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Web Storage & State Management</h1>
+
+  <!-- Task 1 -->
+  <h2>Task 1: Verify Persistence</h2>
+  <input type="text" id="username" placeholder="Enter your name">
+  <button onclick="saveData()">Save</button>
+  <button onclick="loadData()">Load</button>
+  <button onclick="clearData()">Clear</button>
+  <p id="output"></p>
+
+  <!-- Task 2 -->
+  <h2>Task 2: Theme & Font Preference</h2>
+  <button id="toggleTheme">Toggle Theme</button>
+  <label for="fontSize">Font Size:</label>
+  <select id="fontSize">
+    <option value="16px">Small</option>
+    <option value="20px">Medium</option>
+    <option value="24px">Large</option>
+  </select>
+
+  <!-- Task 3 -->
+  <h2>Task 3: Form with Temporary Save</h2>
+  <form>
+    <input type="text" id="name" placeholder="Enter your name"><br>
+    <input type="email" id="email" placeholder="Enter your email"><br>
+    <textarea id="message" placeholder="Enter your message"></textarea><br>
+  </form>
+
+  <script>
+    // ---------- Task 1 ----------
+    function saveData() {
+      let name = document.getElementById("username").value;
+      localStorage.setItem("userName", name);
+      sessionStorage.setItem("sessionName", name);
+      alert("Data saved!");
+    }
+
+    function loadData() {
+      let localName = localStorage.getItem("userName");
+      let sessionName = sessionStorage.getItem("sessionName");
+      document.getElementById("output").innerHTML =
+        `LocalStorage: ${localName || 'No data'} <br> SessionStorage: ${sessionName || 'No data'}`;
+    }
+
+    function clearData() {
+      localStorage.clear();
+      sessionStorage.clear();
+      document.getElementById("output").innerHTML = "Storage cleared!";
+    }
+
+    // ---------- Task 2 ----------
+    const body = document.body;
+    const btn = document.getElementById("toggleTheme");
+    const fontSelect = document.getElementById("fontSize");
+
+    // Load saved preferences
+    const savedTheme = localStorage.getItem("theme") || "light";
+    const savedFont = localStorage.getItem("fontSize") || "16px";
+    body.classList.add(savedTheme);
+    body.style.fontSize = savedFont;
+    fontSelect.value = savedFont;
+    btn.textContent = savedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode";
+
+    // Toggle theme
+    btn.addEventListener("click", () => {
+      const newTheme = body.classList.contains("dark") ? "light" : "dark";
+      body.className = newTheme;
+      localStorage.setItem("theme", newTheme);
+      btn.textContent = newTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode";
+    });
+
+    // Change font size
+    fontSelect.addEventListener("change", () => {
+      const newFont = fontSelect.value;
+      body.style.fontSize = newFont;
+      localStorage.setItem("fontSize", newFont);
+    });
+
+    // ---------- Task 3 ----------
+    const nameField = document.getElementById("name");
+    const emailField = document.getElementById("email");
+    const messageField = document.getElementById("message");
+
+    // Restore form data
+    nameField.value = sessionStorage.getItem("name") || "";
+    emailField.value = sessionStorage.getItem("email") || "";
+    messageField.value = sessionStorage.getItem("message") || "";
+
+    // Save form data as user types
+    [nameField, emailField, messageField].forEach(field => {
+      field.addEventListener("input", () => {
+        sessionStorage.setItem(field.id, field.value);
+      });
+    });
+  </script>
+
+</body>
+</html>
